@@ -1,0 +1,25 @@
+QMAKE_CXX.QT_COMPILER_STDCXX = 199711L
+QMAKE_CXX.QMAKE_GCC_MAJOR_VERSION = 5
+QMAKE_CXX.QMAKE_GCC_MINOR_VERSION = 3
+QMAKE_CXX.QMAKE_GCC_PATCH_VERSION = 1
+QMAKE_CXX.COMPILER_MACROS = \
+    QT_COMPILER_STDCXX \
+    QMAKE_GCC_MAJOR_VERSION \
+    QMAKE_GCC_MINOR_VERSION \
+    QMAKE_GCC_PATCH_VERSION
+QMAKE_CXX.INCDIRS = \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1 \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1/aarch64-linux-gnu \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1/backward \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1/include \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1/include-fixed \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include
+QMAKE_CXX.LIBDIRS = \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1 \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/lib64 \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/lib \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/lib \
+    /home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/lib
