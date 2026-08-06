@@ -48,7 +48,41 @@ CameraEngine
 
 */
 
+/*
+OpenGL ES：    Open Graphics Library for Embedded Systems
 
+    摄像头
+      |
+    YUV数据
+      |
+    上传GPU
+      |
+    Shader计算
+      |
+    GPU输出像素
+      |
+    屏幕
+    
+或者：
+    C++程序
+
+       |
+       |
+    OpenGL ES(如何画)
+
+       |
+       |
+    EGL(画在哪里)
+
+       |
+       |
+    Mali驱动(GPU Driver)
+
+       |
+       |
+    GPU硬件
+
+*/
 
 namespace{
     // 这里的函数和变量都只对当前文件可见.
@@ -68,6 +102,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->AI_reasoning_btn->setCheckable(true);
     ui->label_1->setScaledContents(true);       // 让 QLabel 控件自动缩放其显示的图片或内容，以适应控件本身的大小
 
+
+
+//    GLWidget *glWidget;
+//    glWidget = new GLWidget(this);
+//    setCentralWidget(glWidget);
 
     
     cameraEngine.init();
@@ -111,6 +150,22 @@ int MainWindow::read_cpu_temp()
 }
 
 
+void MainWindow::updateDisplay() {
+    const auto& results = yoloEngine.getReasoningResults();
+
+    QString resultText;
+    for (const auto& str : results) {
+        resultText += QString::fromStdString(str) + "\n";
+    }
+
+    QString displayText = QString("CPU温度: %1°C\n\n识别结果:\n%2")
+                              .arg(read_cpu_temp())
+                              .arg(resultText);
+
+    ui->text_label2->setText(displayText);
+}
+
+
 void MainWindow::initTimer()
 {
     connect(timer, &QTimer::timeout, this, [=](){
@@ -125,15 +180,11 @@ void MainWindow::initTimer()
                 yoloEngine.process(frame);
                 
                 if(skip % 3 == 0)
-                    ui->text_label2->setText(
-                        QString("CPU Temp: %1 C").arg(read_cpu_temp())
-                    );
+                    updateDisplay();
             }
             else {
                 if(skip % 20 == 0)
-                    ui->text_label2->setText(
-                        QString("CPU Temp: %1 C").arg(read_cpu_temp())
-                    );
+                    updateDisplay();
             }
             
             QImage img(
@@ -149,67 +200,36 @@ void MainWindow::initTimer()
             );
         }
 
-
-
-
-/*    
-        QElapsedTimer tmp_timer;
-        tmp_timer.start();
-        
-        if (camera->getFrame(rgb, width, height)) {
-            static int skip = 0;
-            skip++;
-//            qDebug() << "camera =" << tmp_timer.elapsed();  //28ms
-            tmp_timer.restart();
-            
-            if (ai_reasoning_enable)//skip++ % 2)   // 每3帧推一次.
-            {
-                objects.clear();
-                yolov5.detect(rgb.data(), width, height, objects);
-                
-                qDebug() << "detect =" << tmp_timer.elapsed() << "ms";  // 4核 1135ms ，单核 3000ms, 4核320,320的只需300ms
-                tmp_timer.restart();
-//                printf("objects size = %zu\n", objects.size()); // 容器里面有多少个元素.
-                yolov5.nms(objects, 0.45f);
-
-                printf("ofter nms,objects size = %zu\n", objects.size()); // 容器里面有多少个元素.
-//                qDebug() << "nms =" << tmp_timer.elapsed() << "ms";
-                tmp_timer.restart();
-                
-                for (auto& obj : objects){
-                    draw_box(rgb.data(), width, height, 3, obj);// .rect);
-                }    
-//                qDebug() << "draw_box =" << tmp_timer.elapsed() << "ms";    //3ms
-                tmp_timer.restart();
-
-                if(skip % 3 == 0)
-                    ui->text_label2->setText(
-                        QString("CPU Temp: %1 C").arg(read_cpu_temp())
-                    );
-            }
-            else {
-                if(skip % 20 == 0)
-                    ui->text_label2->setText(
-                        QString("CPU Temp: %1 C").arg(read_cpu_temp())
-                    );
-            }
-            
-            QImage img(rgb.data(), width, height, width * 3, QImage::Format_RGB888);
-
-//            QPixmap pixmap = QPixmap::fromImage(img);
-//            ui->label_1->setPixmap(
-//                pixmap.scaled(ui->label_1->size(),
-//                              Qt::KeepAspectRatio,
-//                              Qt::SmoothTransformation));     // 这个需要31ms
-                              
-            ui->label_1->setPixmap(QPixmap::fromImage(img));                  
-//            qDebug() << "setPixmap =" << tmp_timer.elapsed() << "ms";   //3ms
-        }
-*/
     });
 
     timer->start(cameraEngine.getFPS());     
 
 }
+
+
+
+//GLWidget::GLWidget(QWidget *parent)
+//    : QOpenGLWidget(parent)
+//{
+//
+//}
+//
+//
+//void GLWidget::initializeGL()
+//{
+//    initializeOpenGLFunctions();
+//
+//    glClearColor(
+//        1.0,
+//        0.0,
+//        0.0,
+//        1.0
+//    );
+//}
+//
+//void GLWidget::paintGL()
+//{
+//    glClear(GL_COLOR_BUFFER_BIT);
+//}
 
 

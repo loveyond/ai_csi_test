@@ -15,7 +15,8 @@ bool YoloEngine::init(){
 void YoloEngine::process(Frame& frame)
 {
     objects.clear();
-
+    reasoning_results.clear();
+    
     yolov5.detect(
         frame.rgb.data(),
         frame.width,
@@ -123,6 +124,10 @@ void YoloEngine::draw_box(unsigned char* img, int w, int h, int channels, const 
     printf("label=%s prob=%.3f\n",
            class_names[obj.label],
            obj.prob);
+    reasoning_results.push_back(
+                    std::string(class_names[obj.label])
+                    + "," + std::to_string(obj.prob));
+    
 }
 
 

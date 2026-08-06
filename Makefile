@@ -689,6 +689,21 @@ moc_mainwindow.cpp: mainwindow.h \
 		CameraEngine.h \
 		cameraV4L2/CameraV4L2.h \
 		YoloEngine.h \
+		../qt-arm-sdk/include/QtWidgets/QOpenGLWidget \
+		../qt-arm-sdk/include/QtWidgets/qopenglwidget.h \
+		../qt-arm-sdk/include/QtWidgets/QWidget \
+		../qt-arm-sdk/include/QtGui/QSurfaceFormat \
+		../qt-arm-sdk/include/QtGui/qsurfaceformat.h \
+		../qt-arm-sdk/include/QtGui/qopengl.h \
+		../qt-arm-sdk/include/QtCore/qt_windows.h \
+		../qt-arm-sdk/include/QtGui/qopengles2ext.h \
+		../qt-arm-sdk/include/QtGui/qopenglext.h \
+		../qt-arm-sdk/include/QtGui/QOpenGLFunctions \
+		../qt-arm-sdk/include/QtGui/qopenglfunctions.h \
+		../qt-arm-sdk/include/QtGui/qopenglcontext.h \
+		../qt-arm-sdk/include/QtCore/QObject \
+		../qt-arm-sdk/include/QtCore/QScopedPointer \
+		../qt-arm-sdk/include/QtGui/qopenglversionfunctions.h \
 		moc_predefs.h \
 		../qt-arm-sdk/bin/moc
 	/mnt/share/qt/qt-arm-sdk/bin/moc $(DEFINES) --include /mnt/share/qt/ai_csi_test/moc_predefs.h -I/mnt/share/qt/qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++ -I/mnt/share/qt/ai_csi_test -I/mnt/share/qt/ai_csi_test -I/mnt/share/qt/ai_csi_test/cameraV4L2 -I/mnt/share/qt/ai_csi_test/ai -I/mnt/share/ai_learn/ncnn-install/include/ncnn -I/mnt/share/qt/qt-arm-sdk/include -I/mnt/share/qt/qt-arm-sdk/include/QtWidgets -I/mnt/share/qt/qt-arm-sdk/include/QtGui -I/mnt/share/qt/qt-arm-sdk/include/QtCore -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1 -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1/aarch64-linux-gnu -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1/backward -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1/include -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1/include-fixed -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include mainwindow.h -o moc_mainwindow.cpp
@@ -742,7 +757,73 @@ yolov5.o: ai/yolov5.cpp ai/yolov5.h \
 		../../ai_learn/ncnn-install/include/ncnn/paramdict.h \
 		../../ai_learn/ncnn-install/include/ncnn/command.h \
 		../../ai_learn/ncnn-install/include/ncnn/pipeline.h \
-		../../ai_learn/ncnn-install/include/ncnn/gpu.h
+		../../ai_learn/ncnn-install/include/ncnn/gpu.h \
+		../qt-arm-sdk/include/QtCore/QElapsedTimer \
+		../qt-arm-sdk/include/QtCore/qelapsedtimer.h \
+		../qt-arm-sdk/include/QtCore/qglobal.h \
+		../qt-arm-sdk/include/QtCore/qconfig-bootstrapped.h \
+		../qt-arm-sdk/include/QtCore/qconfig.h \
+		../qt-arm-sdk/include/QtCore/qtcore-config.h \
+		../qt-arm-sdk/include/QtCore/qsystemdetection.h \
+		../qt-arm-sdk/include/QtCore/qprocessordetection.h \
+		../qt-arm-sdk/include/QtCore/qcompilerdetection.h \
+		../qt-arm-sdk/include/QtCore/qtypeinfo.h \
+		../qt-arm-sdk/include/QtCore/qsysinfo.h \
+		../qt-arm-sdk/include/QtCore/qlogging.h \
+		../qt-arm-sdk/include/QtCore/qflags.h \
+		../qt-arm-sdk/include/QtCore/qatomic.h \
+		../qt-arm-sdk/include/QtCore/qbasicatomic.h \
+		../qt-arm-sdk/include/QtCore/qatomic_bootstrap.h \
+		../qt-arm-sdk/include/QtCore/qgenericatomic.h \
+		../qt-arm-sdk/include/QtCore/qatomic_cxx11.h \
+		../qt-arm-sdk/include/QtCore/qatomic_msvc.h \
+		../qt-arm-sdk/include/QtCore/qglobalstatic.h \
+		../qt-arm-sdk/include/QtCore/qmutex.h \
+		../qt-arm-sdk/include/QtCore/qnumeric.h \
+		../qt-arm-sdk/include/QtCore/qversiontagging.h \
+		../qt-arm-sdk/include/QtCore/QDebug \
+		../qt-arm-sdk/include/QtCore/qdebug.h \
+		../qt-arm-sdk/include/QtCore/qalgorithms.h \
+		../qt-arm-sdk/include/QtCore/qhash.h \
+		../qt-arm-sdk/include/QtCore/qchar.h \
+		../qt-arm-sdk/include/QtCore/qiterator.h \
+		../qt-arm-sdk/include/QtCore/qlist.h \
+		../qt-arm-sdk/include/QtCore/qrefcount.h \
+		../qt-arm-sdk/include/QtCore/qarraydata.h \
+		../qt-arm-sdk/include/QtCore/qhashfunctions.h \
+		../qt-arm-sdk/include/QtCore/qstring.h \
+		../qt-arm-sdk/include/QtCore/qbytearray.h \
+		../qt-arm-sdk/include/QtCore/qnamespace.h \
+		../qt-arm-sdk/include/QtCore/qstringliteral.h \
+		../qt-arm-sdk/include/QtCore/qstringalgorithms.h \
+		../qt-arm-sdk/include/QtCore/qstringview.h \
+		../qt-arm-sdk/include/QtCore/qstringbuilder.h \
+		../qt-arm-sdk/include/QtCore/qpair.h \
+		../qt-arm-sdk/include/QtCore/qbytearraylist.h \
+		../qt-arm-sdk/include/QtCore/qstringlist.h \
+		../qt-arm-sdk/include/QtCore/qregexp.h \
+		../qt-arm-sdk/include/QtCore/qstringmatcher.h \
+		../qt-arm-sdk/include/QtCore/qmap.h \
+		../qt-arm-sdk/include/QtCore/qtextstream.h \
+		../qt-arm-sdk/include/QtCore/qiodevice.h \
+		../qt-arm-sdk/include/QtCore/qobject.h \
+		../qt-arm-sdk/include/QtCore/qobjectdefs.h \
+		../qt-arm-sdk/include/QtCore/qobjectdefs_impl.h \
+		../qt-arm-sdk/include/QtCore/qcoreevent.h \
+		../qt-arm-sdk/include/QtCore/qscopedpointer.h \
+		../qt-arm-sdk/include/QtCore/qmetatype.h \
+		../qt-arm-sdk/include/QtCore/qvarlengtharray.h \
+		../qt-arm-sdk/include/QtCore/qcontainerfwd.h \
+		../qt-arm-sdk/include/QtCore/qobject_impl.h \
+		../qt-arm-sdk/include/QtCore/qlocale.h \
+		../qt-arm-sdk/include/QtCore/qvariant.h \
+		../qt-arm-sdk/include/QtCore/qshareddata.h \
+		../qt-arm-sdk/include/QtCore/qvector.h \
+		../qt-arm-sdk/include/QtCore/qpoint.h \
+		../qt-arm-sdk/include/QtCore/qset.h \
+		../qt-arm-sdk/include/QtCore/qcontiguouscache.h \
+		../qt-arm-sdk/include/QtCore/qsharedpointer.h \
+		../qt-arm-sdk/include/QtCore/qsharedpointer_impl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o yolov5.o ai/yolov5.cpp
 
 main.o: main.cpp mainwindow.h \
@@ -879,6 +960,21 @@ main.o: main.cpp mainwindow.h \
 		CameraEngine.h \
 		cameraV4L2/CameraV4L2.h \
 		YoloEngine.h \
+		../qt-arm-sdk/include/QtWidgets/QOpenGLWidget \
+		../qt-arm-sdk/include/QtWidgets/qopenglwidget.h \
+		../qt-arm-sdk/include/QtWidgets/QWidget \
+		../qt-arm-sdk/include/QtGui/QSurfaceFormat \
+		../qt-arm-sdk/include/QtGui/qsurfaceformat.h \
+		../qt-arm-sdk/include/QtGui/qopengl.h \
+		../qt-arm-sdk/include/QtCore/qt_windows.h \
+		../qt-arm-sdk/include/QtGui/qopengles2ext.h \
+		../qt-arm-sdk/include/QtGui/qopenglext.h \
+		../qt-arm-sdk/include/QtGui/QOpenGLFunctions \
+		../qt-arm-sdk/include/QtGui/qopenglfunctions.h \
+		../qt-arm-sdk/include/QtGui/qopenglcontext.h \
+		../qt-arm-sdk/include/QtCore/QObject \
+		../qt-arm-sdk/include/QtCore/QScopedPointer \
+		../qt-arm-sdk/include/QtGui/qopenglversionfunctions.h \
 		../qt-arm-sdk/include/QtWidgets/QApplication \
 		../qt-arm-sdk/include/QtWidgets/qapplication.h \
 		../qt-arm-sdk/include/QtCore/qcoreapplication.h \
@@ -1022,6 +1118,21 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		CameraEngine.h \
 		cameraV4L2/CameraV4L2.h \
 		YoloEngine.h \
+		../qt-arm-sdk/include/QtWidgets/QOpenGLWidget \
+		../qt-arm-sdk/include/QtWidgets/qopenglwidget.h \
+		../qt-arm-sdk/include/QtWidgets/QWidget \
+		../qt-arm-sdk/include/QtGui/QSurfaceFormat \
+		../qt-arm-sdk/include/QtGui/qsurfaceformat.h \
+		../qt-arm-sdk/include/QtGui/qopengl.h \
+		../qt-arm-sdk/include/QtCore/qt_windows.h \
+		../qt-arm-sdk/include/QtGui/qopengles2ext.h \
+		../qt-arm-sdk/include/QtGui/qopenglext.h \
+		../qt-arm-sdk/include/QtGui/QOpenGLFunctions \
+		../qt-arm-sdk/include/QtGui/qopenglfunctions.h \
+		../qt-arm-sdk/include/QtGui/qopenglcontext.h \
+		../qt-arm-sdk/include/QtCore/QObject \
+		../qt-arm-sdk/include/QtCore/QScopedPointer \
+		../qt-arm-sdk/include/QtGui/qopenglversionfunctions.h \
 		ui_mainwindow.h \
 		../qt-arm-sdk/include/QtCore/QVariant \
 		../qt-arm-sdk/include/QtWidgets/QAction \
@@ -1044,7 +1155,6 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		../qt-arm-sdk/include/QtWidgets/qabstractbutton.h \
 		../qt-arm-sdk/include/QtWidgets/QStatusBar \
 		../qt-arm-sdk/include/QtWidgets/qstatusbar.h \
-		../qt-arm-sdk/include/QtWidgets/QWidget \
 		../qt-arm-sdk/include/QtCore/QDebug \
 		../qt-arm-sdk/include/QtCore/QElapsedTimer \
 		../qt-arm-sdk/include/QtCore/qelapsedtimer.h \

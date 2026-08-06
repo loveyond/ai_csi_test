@@ -9,6 +9,8 @@
 #include "CameraEngine.h"
 #include "YoloEngine.h"
 
+
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -36,5 +38,32 @@ private:
     
     int read_cpu_temp();
     void initTimer();
+    void updateDisplay();
 };
+
+
+
+
+//#include <QOpenGLWidget>
+//#include <QOpenGLFunctions>
+//
+//class GLWidget : public QOpenGLWidget,
+//                 protected QOpenGLFunctions
+//{
+//    Q_OBJECT
+//
+//public:
+//    explicit GLWidget(QWidget *parent = nullptr);
+//
+//protected:
+//
+//    void initializeGL() override;
+//
+//    void paintGL() override;
+//};
+
+
+
+
+
 #endif // MAINWINDOW_H
