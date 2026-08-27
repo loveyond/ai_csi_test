@@ -173,7 +173,7 @@ void MainWindow::initTimer()
         skip++;
 
         cameraEngine.capture();
-        Frame frame;
+        Frame frame;                            // 这里的frame用于和ai解耦
         if(frameBuffer.get(frame))
         {
             if(ai_reasoning_enable){
