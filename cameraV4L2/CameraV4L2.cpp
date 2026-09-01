@@ -475,16 +475,28 @@ bool CameraV4L2::readFrame(Frame& frame)//std::vector<unsigned char>& rgb, int& 
     unsigned char* u = static_cast<unsigned char*>( buffers[buf.index].start[1] );
     unsigned char* v = static_cast<unsigned char*>( buffers[buf.index].start[2] );
 
-//    static std::vector<unsigned char> rgb(width * height * 3);
-    if (frame.rgb.size() != width * height * 3)
-        frame.rgb.resize(width * height * 3);
+//    if (frame.rgb.size() != width * height * 3)
+//        frame.rgb.resize(width * height * 3);
+//
+//    ImageConverter::YUV420ToRGB(
+//        y, u, v,
+//        width, height,
+//        frame.rgb.data()
+//        );
+        
+    if(frame.y.size() != width * height)
+        frame.y.resize(width * height);
+    
+    if(frame.u.size() != width / 2 * height / 2)
+        frame.u.resize(width / 2 * height / 2);
+    
+    if(frame.v.size() != width / 2 * height / 2)
+        frame.v.resize(width / 2 * height / 2);
+    
+    memcpy(frame.y.data(), y, width * height);
+    memcpy(frame.u.data(), u, width / 2 * height / 2);
+    memcpy(frame.v.data(), v, width / 2 * height / 2);
 
-
-    ImageConverter::YUV420ToRGB(
-        y, u, v,
-        width, height,
-        frame.rgb.data()
-        );
     frame.width = width;
     frame.height = height;
     

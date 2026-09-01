@@ -8,7 +8,7 @@
 #include "FrameBuffer.h"
 #include "CameraEngine.h"
 #include "YoloEngine.h"
-
+#include "GLWidget.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -35,6 +35,7 @@ private:
     
     YoloEngine yoloEngine;
 
+    GLWidget *glWidget;
     
     int read_cpu_temp();
     void initTimer();

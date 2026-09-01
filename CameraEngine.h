@@ -17,9 +17,9 @@ public:
     
     void capture();
     
-    int getFPS() const { return fps; }
+    int getInterval() const { return interval; }
     
-    int setFPS(int date)  {  fps = date; return 0;}
+    int setInterval(int date)  {  interval = date; return 0;}
 
 private:
 
@@ -27,7 +27,7 @@ private:
 
     FrameBuffer* frameBuffer;
 
-    unsigned int fps = 50;  // 33ms约30fps  
+    unsigned int interval = 50;  // 这里的数值是ms, 33ms约30fps  50ms约20fps
 
 };
 

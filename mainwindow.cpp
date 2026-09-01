@@ -104,9 +104,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-//    GLWidget *glWidget;
-//    glWidget = new GLWidget(this);
-//    setCentralWidget(glWidget);
+    glWidget = new GLWidget(ui->label_1->parentWidget());
+    glWidget->setGeometry(ui->label_1->geometry());    
+    glWidget->show();
 
     
     cameraEngine.init();
@@ -117,10 +117,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->AI_reasoning_btn, &QPushButton::clicked, this, [=](bool checked){    
                 ai_reasoning_enable = checked;
                 
-                if(ai_reasoning_enable) cameraEngine.setFPS(160);   //yolov5s 320的用330，yolov5n 320的用160
-                else cameraEngine.setFPS(50);
+                if(ai_reasoning_enable) cameraEngine.setInterval(160);   //yolov5s 320的用330，yolov5n 320的用160
+                else cameraEngine.setInterval(50);
                 
-                timer->start(cameraEngine.getFPS());
+                timer->start(cameraEngine.getInterval());
                 qDebug() << "AI reasoning:"
                          << ai_reasoning_enable;
             });
@@ -187,49 +187,28 @@ void MainWindow::initTimer()
                     updateDisplay();
             }
             
-            QImage img(
-                frame.rgb.data(),
-                frame.width,
-                frame.height,
-                frame.width*3,
-                QImage::Format_RGB888
-            );
+//            QImage img(
+//                frame.rgb.data(),
+//                frame.width,
+//                frame.height,
+//                frame.width*3,
+//                QImage::Format_RGB888
+//            );
+//
+//            ui->label_1->setPixmap(
+//                QPixmap::fromImage(img)//.copy())
+//            );
+            glWidget->updateFrame(frame);
 
-            ui->label_1->setPixmap(
-                QPixmap::fromImage(img)//.copy())
-            );
         }
-
     });
 
-    timer->start(cameraEngine.getFPS());     
+    timer->start(cameraEngine.getInterval());     
 
 }
 
 
 
-//GLWidget::GLWidget(QWidget *parent)
-//    : QOpenGLWidget(parent)
-//{
-//
-//}
-//
-//
-//void GLWidget::initializeGL()
-//{
-//    initializeOpenGLFunctions();
-//
-//    glClearColor(
-//        1.0,
-//        0.0,
-//        0.0,
-//        1.0
-//    );
-//}
-//
-//void GLWidget::paintGL()
-//{
-//    glClear(GL_COLOR_BUFFER_BIT);
-//}
+
 
 

@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui widgets		# QT 包含对应模块
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -23,7 +23,9 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     CameraEngine.cpp \
-    YoloEngine.cpp
+    YoloEngine.cpp	\
+    GLWidget.cpp \
+    egl/EGLManager.cpp egl/GLRenderer.cpp egl/Matrix4.cpp egl/Mesh.cpp egl/Shader.cpp egl/Sprite.cpp egl/Texture.cpp egl/YUVTexture.cpp
 
 HEADERS += \
     cameraV4L2/CameraV4L2.h \
@@ -36,7 +38,9 @@ HEADERS += \
     CameraEngine.h	\
     Frame.h			\
     FrameBuffer.h	\
-    YoloEngine.h
+    YoloEngine.h	\
+    GLWidget.h		\
+    egl/EGLManager.h egl/GLRenderer.h egl/Matrix4.h egl/Mesh.h egl/Shader.h egl/Sprite.h egl/Texture.h egl/YUVTexture.h
 
 FORMS += \
     mainwindow.ui
@@ -47,14 +51,23 @@ TRANSLATIONS += \
 INCLUDEPATH += $$PWD   # 把当前源码目录加入头文件搜索路径
 INCLUDEPATH += $$PWD/cameraV4L2
 INCLUDEPATH += $$PWD/ai
+INCLUDEPATH += $$PWD/egl
 INCLUDEPATH += $$PWD/../../ai_learn/ncnn-install/include/ncnn
+INCLUDEPATH += $$PWD/../../test/t507_gpu/include
 
-QMAKE_CXXFLAGS += -fopenmp
-QMAKE_LFLAGS += -fopenmp
+QMAKE_CXXFLAGS += -fopenmp -DEGL_FBDEV=1 -std=c++11
+QMAKE_LFLAGS += -fopenmp 
 
 LIBS += -L/home/gg/test/ai_test/ncnn/build/src -lncnn
+LIBS += -L$$PWD/../../test/t507_gpu/lib
+LIBS += -lEGL -lGLESv2
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+
+message("QT_VERSION = $$[QT_VERSION]")
+message("QT_INSTALL_PREFIX = $$[QT_INSTALL_PREFIX]")
+message("QT_INSTALL_HEADERS = $$[QT_INSTALL_HEADERS]")

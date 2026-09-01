@@ -46,7 +46,6 @@
 #define __UINTMAX_TYPE__ long unsigned int
 #define __linux 1
 #define __DEC32_EPSILON__ 1E-6DF
-#define __OPTIMIZE__ 1
 #define __CHAR_UNSIGNED__ 1
 #define __UINT32_MAX__ 0xffffffffU
 #define __GXX_EXPERIMENTAL_CXX0X__ 1
@@ -80,6 +79,7 @@
 #define __gnu_linux__ 1
 #define __has_include_next(STR) __has_include_next__(STR)
 #define __LDBL_HAS_QUIET_NAN__ 1
+#define _REENTRANT 1
 #define __GNUC__ 5
 #define __GXX_RTTI 1
 #define __cpp_delegating_constructors 200604
@@ -164,6 +164,7 @@
 #define __LINARO_RELEASE__ 201605
 #define __GCC_ATOMIC_WCHAR_T_LOCK_FREE 2
 #define __SIZEOF_PTRDIFF_T__ 8
+#define __OPTIMIZE__ 1
 #define __AARCH64EL__ 1
 #define __DEC32_SUBNORMAL_MIN__ 0.000001E-95DF
 #define __INT_FAST16_MAX__ 0x7fffffffffffffffL
@@ -236,6 +237,7 @@
 #define __ARM_NEON 1
 #define __INT_FAST8_TYPE__ signed char
 #define __GNUC_STDC_INLINE__ 1
+#define _OPENMP 201307
 #define __DBL_DECIMAL_DIG__ 17
 #define __STDC_UTF_32__ 1
 #define __DEC_EVAL_METHOD__ 2
@@ -257,6 +259,7 @@
 #define __cpp_exceptions 199711
 #define __INTMAX_TYPE__ long int
 #define __DEC128_MAX_EXP__ 6145
+#define EGL_FBDEV 1
 #define __ATOMIC_CONSUME 1
 #define __GNUC_MINOR__ 3
 #define __GLIBCXX_TYPE_INT_N_0 __int128

@@ -16,8 +16,8 @@ CC            = aarch64-linux-gnu-gcc
 CXX           = aarch64-linux-gnu-g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -fopenmp -O2 -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -I. -IcameraV4L2 -Iai -I../../ai_learn/ncnn-install/include/ncnn -I../qt-arm-sdk/include -I../qt-arm-sdk/include/QtWidgets -I../qt-arm-sdk/include/QtGui -I../qt-arm-sdk/include/QtCore -I. -I. -I../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++
+CXXFLAGS      = -pipe -fopenmp -DEGL_FBDEV=1 -std=c++11 -O2 -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
+INCPATH       = -I. -I. -IcameraV4L2 -Iai -Iegl -I../../ai_learn/ncnn-install/include/ncnn -I../../test/t507_gpu/include -I../qt-arm-sdk/include -I../qt-arm-sdk/include/QtWidgets -I../qt-arm-sdk/include/QtGui -I../qt-arm-sdk/include/QtCore -I. -I../../test/t507_gpu/include -I. -I../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++
 QMAKE         = /mnt/share/qt/qt-arm-sdk/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = ai_csi_test1.0.0
 DISTDIR = /mnt/share/qt/ai_csi_test/.tmp/ai_csi_test1.0.0
 LINK          = aarch64-linux-gnu-g++
 LFLAGS        = -fopenmp -Wl,-O1 -Wl,-rpath,/mnt/share/qt/qt-arm-sdk/lib
-LIBS          = $(SUBLIBS) -L/home/gg/test/ai_test/ncnn/build/src -lncnn /mnt/share/qt/qt-arm-sdk/lib/libQt5Widgets.so /mnt/share/qt/qt-arm-sdk/lib/libQt5Gui.so /mnt/share/qt/qt-arm-sdk/lib/libQt5Core.so -lpthread   
+LIBS          = $(SUBLIBS) -L/mnt/share/test/t507_gpu/lib -L/home/gg/test/ai_test/ncnn/build/src -lncnn -L/mnt/share/qt/ai_csi_test/../../test/t507_gpu/lib -lEGL -lGLESv2 /mnt/share/qt/qt-arm-sdk/lib/libQt5Widgets.so /mnt/share/qt/qt-arm-sdk/lib/libQt5Gui.so /mnt/share/qt/qt-arm-sdk/lib/libQt5Core.so /mnt/share/test/t507_gpu/lib/libGLESv2.so /mnt/share/test/t507_gpu/lib/libEGL.so -lpthread   
 AR            = aarch64-linux-gnu-ar cqs
 RANLIB        = 
 SED           = sed
@@ -58,7 +58,17 @@ SOURCES       = cameraV4L2/CameraV4L2.cpp \
 		main.cpp \
 		mainwindow.cpp \
 		CameraEngine.cpp \
-		YoloEngine.cpp moc_mainwindow.cpp
+		YoloEngine.cpp \
+		GLWidget.cpp \
+		egl/EGLManager.cpp \
+		egl/GLRenderer.cpp \
+		egl/Matrix4.cpp \
+		egl/Mesh.cpp \
+		egl/Shader.cpp \
+		egl/Sprite.cpp \
+		egl/Texture.cpp \
+		egl/YUVTexture.cpp moc_mainwindow.cpp \
+		moc_GLWidget.cpp
 OBJECTS       = CameraV4L2.o \
 		image_converter.o \
 		yolov5.o \
@@ -66,7 +76,17 @@ OBJECTS       = CameraV4L2.o \
 		mainwindow.o \
 		CameraEngine.o \
 		YoloEngine.o \
-		moc_mainwindow.o
+		GLWidget.o \
+		EGLManager.o \
+		GLRenderer.o \
+		Matrix4.o \
+		Mesh.o \
+		Shader.o \
+		Sprite.o \
+		Texture.o \
+		YUVTexture.o \
+		moc_mainwindow.o \
+		moc_GLWidget.o
 DIST          = ../qt-arm-sdk/mkspecs/features/spec_pre.prf \
 		../qt-arm-sdk/mkspecs/common/unix.conf \
 		../qt-arm-sdk/mkspecs/common/linux.conf \
@@ -76,6 +96,30 @@ DIST          = ../qt-arm-sdk/mkspecs/features/spec_pre.prf \
 		../qt-arm-sdk/mkspecs/common/g++-base.conf \
 		../qt-arm-sdk/mkspecs/common/g++-unix.conf \
 		../qt-arm-sdk/mkspecs/qconfig.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3danimation.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3danimation_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dcore.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dcore_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dextras.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dextras_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dinput.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dinput_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dlogic.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dlogic_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquick.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquick_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickanimation.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickanimation_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickextras.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickextras_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickinput.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickinput_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickrender.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickrender_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickscene2d.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickscene2d_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3drender.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3drender_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_accessibility_support_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_bluetooth.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_bluetooth_private.pri \
@@ -86,6 +130,8 @@ DIST          = ../qt-arm-sdk/mkspecs/features/spec_pre.prf \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_concurrent_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_core.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_core_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_datavisualization.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_datavisualization_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_dbus.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_dbus_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_devicediscovery_support_private.pri \
@@ -112,7 +158,12 @@ DIST          = ../qt-arm-sdk/mkspecs/features/spec_pre.prf \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_networkauth_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_nfc.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_nfc_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_opengl.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_opengl_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_openglextensions.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_openglextensions_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_packetprotocol_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_platformcompositor_support_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_positioning.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_positioning_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_positioningquick.pri \
@@ -127,10 +178,12 @@ DIST          = ../qt-arm-sdk/mkspecs/features/spec_pre.prf \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_qmldevtools_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_qmltest.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_qmltest_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quick.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quick_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quickcontrols2.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quickcontrols2_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_quickparticles_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quickshapes_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quicktemplates2.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quicktemplates2_private.pri \
@@ -194,6 +247,7 @@ DIST          = ../qt-arm-sdk/mkspecs/features/spec_pre.prf \
 		../qt-arm-sdk/mkspecs/features/qt.prf \
 		../qt-arm-sdk/mkspecs/features/resources.prf \
 		../qt-arm-sdk/mkspecs/features/moc.prf \
+		../qt-arm-sdk/mkspecs/features/unix/opengl.prf \
 		../qt-arm-sdk/mkspecs/features/uic.prf \
 		../qt-arm-sdk/mkspecs/features/unix/thread.prf \
 		../qt-arm-sdk/mkspecs/features/qmake_use.prf \
@@ -211,13 +265,31 @@ DIST          = ../qt-arm-sdk/mkspecs/features/spec_pre.prf \
 		CameraEngine.h \
 		Frame.h \
 		FrameBuffer.h \
-		YoloEngine.h cameraV4L2/CameraV4L2.cpp \
+		YoloEngine.h \
+		GLWidget.h \
+		egl/EGLManager.h \
+		egl/GLRenderer.h \
+		egl/Matrix4.h \
+		egl/Mesh.h \
+		egl/Shader.h \
+		egl/Sprite.h \
+		egl/Texture.h \
+		egl/YUVTexture.h cameraV4L2/CameraV4L2.cpp \
 		cameraV4L2/image_converter.cpp \
 		ai/yolov5.cpp \
 		main.cpp \
 		mainwindow.cpp \
 		CameraEngine.cpp \
-		YoloEngine.cpp
+		YoloEngine.cpp \
+		GLWidget.cpp \
+		egl/EGLManager.cpp \
+		egl/GLRenderer.cpp \
+		egl/Matrix4.cpp \
+		egl/Mesh.cpp \
+		egl/Shader.cpp \
+		egl/Sprite.cpp \
+		egl/Texture.cpp \
+		egl/YUVTexture.cpp
 QMAKE_TARGET  = ai_csi_test
 DESTDIR       = 
 TARGET        = ai_csi_test
@@ -238,6 +310,30 @@ Makefile: ai_csi_test.pro ../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++/qmake.conf
 		../qt-arm-sdk/mkspecs/common/g++-base.conf \
 		../qt-arm-sdk/mkspecs/common/g++-unix.conf \
 		../qt-arm-sdk/mkspecs/qconfig.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3danimation.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3danimation_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dcore.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dcore_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dextras.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dextras_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dinput.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dinput_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dlogic.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dlogic_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquick.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquick_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickanimation.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickanimation_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickextras.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickextras_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickinput.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickinput_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickrender.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickrender_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickscene2d.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickscene2d_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3drender.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_3drender_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_accessibility_support_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_bluetooth.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_bluetooth_private.pri \
@@ -248,6 +344,8 @@ Makefile: ai_csi_test.pro ../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++/qmake.conf
 		../qt-arm-sdk/mkspecs/modules/qt_lib_concurrent_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_core.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_core_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_datavisualization.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_datavisualization_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_dbus.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_dbus_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_devicediscovery_support_private.pri \
@@ -274,7 +372,12 @@ Makefile: ai_csi_test.pro ../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++/qmake.conf
 		../qt-arm-sdk/mkspecs/modules/qt_lib_networkauth_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_nfc.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_nfc_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_opengl.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_opengl_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_openglextensions.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_openglextensions_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_packetprotocol_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_platformcompositor_support_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_positioning.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_positioning_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_positioningquick.pri \
@@ -289,10 +392,12 @@ Makefile: ai_csi_test.pro ../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++/qmake.conf
 		../qt-arm-sdk/mkspecs/modules/qt_lib_qmldevtools_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_qmltest.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_qmltest_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quick.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quick_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quickcontrols2.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quickcontrols2_private.pri \
+		../qt-arm-sdk/mkspecs/modules/qt_lib_quickparticles_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quickshapes_private.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quicktemplates2.pri \
 		../qt-arm-sdk/mkspecs/modules/qt_lib_quicktemplates2_private.pri \
@@ -356,6 +461,7 @@ Makefile: ai_csi_test.pro ../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++/qmake.conf
 		../qt-arm-sdk/mkspecs/features/qt.prf \
 		../qt-arm-sdk/mkspecs/features/resources.prf \
 		../qt-arm-sdk/mkspecs/features/moc.prf \
+		../qt-arm-sdk/mkspecs/features/unix/opengl.prf \
 		../qt-arm-sdk/mkspecs/features/uic.prf \
 		../qt-arm-sdk/mkspecs/features/unix/thread.prf \
 		../qt-arm-sdk/mkspecs/features/qmake_use.prf \
@@ -375,6 +481,30 @@ Makefile: ai_csi_test.pro ../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++/qmake.conf
 ../qt-arm-sdk/mkspecs/common/g++-base.conf:
 ../qt-arm-sdk/mkspecs/common/g++-unix.conf:
 ../qt-arm-sdk/mkspecs/qconfig.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3danimation.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3danimation_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dcore.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dcore_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dextras.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dextras_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dinput.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dinput_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dlogic.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dlogic_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquick.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquick_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickanimation.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickanimation_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickextras.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickextras_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickinput.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickinput_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickrender.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickrender_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickscene2d.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3dquickscene2d_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3drender.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_3drender_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_accessibility_support_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_bluetooth.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_bluetooth_private.pri:
@@ -385,6 +515,8 @@ Makefile: ai_csi_test.pro ../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++/qmake.conf
 ../qt-arm-sdk/mkspecs/modules/qt_lib_concurrent_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_core.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_core_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_datavisualization.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_datavisualization_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_dbus.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_dbus_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_devicediscovery_support_private.pri:
@@ -411,7 +543,12 @@ Makefile: ai_csi_test.pro ../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++/qmake.conf
 ../qt-arm-sdk/mkspecs/modules/qt_lib_networkauth_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_nfc.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_nfc_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_opengl.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_opengl_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_openglextensions.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_openglextensions_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_packetprotocol_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_platformcompositor_support_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_positioning.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_positioning_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_positioningquick.pri:
@@ -426,10 +563,12 @@ Makefile: ai_csi_test.pro ../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++/qmake.conf
 ../qt-arm-sdk/mkspecs/modules/qt_lib_qmldevtools_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_qmltest.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_qmltest_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_quick.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_quick_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_quickcontrols2.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_quickcontrols2_private.pri:
+../qt-arm-sdk/mkspecs/modules/qt_lib_quickparticles_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_quickshapes_private.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_quicktemplates2.pri:
 ../qt-arm-sdk/mkspecs/modules/qt_lib_quicktemplates2_private.pri:
@@ -493,6 +632,7 @@ Makefile: ai_csi_test.pro ../qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++/qmake.conf
 ../qt-arm-sdk/mkspecs/features/qt.prf:
 ../qt-arm-sdk/mkspecs/features/resources.prf:
 ../qt-arm-sdk/mkspecs/features/moc.prf:
+../qt-arm-sdk/mkspecs/features/unix/opengl.prf:
 ../qt-arm-sdk/mkspecs/features/uic.prf:
 ../qt-arm-sdk/mkspecs/features/unix/thread.prf:
 ../qt-arm-sdk/mkspecs/features/qmake_use.prf:
@@ -517,8 +657,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../qt-arm-sdk/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents cameraV4L2/CameraV4L2.h cameraV4L2/image_converter.h ai/yolov5.h cameraV4L2/sunxi_camera_v2.h cameraV4L2/sunxi_display2.h mainwindow.h CameraEngine.h Frame.h FrameBuffer.h YoloEngine.h $(DISTDIR)/
-	$(COPY_FILE) --parents cameraV4L2/CameraV4L2.cpp cameraV4L2/image_converter.cpp ai/yolov5.cpp main.cpp mainwindow.cpp CameraEngine.cpp YoloEngine.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents cameraV4L2/CameraV4L2.h cameraV4L2/image_converter.h ai/yolov5.h cameraV4L2/sunxi_camera_v2.h cameraV4L2/sunxi_display2.h mainwindow.h CameraEngine.h Frame.h FrameBuffer.h YoloEngine.h GLWidget.h egl/EGLManager.h egl/GLRenderer.h egl/Matrix4.h egl/Mesh.h egl/Shader.h egl/Sprite.h egl/Texture.h egl/YUVTexture.h $(DISTDIR)/
+	$(COPY_FILE) --parents cameraV4L2/CameraV4L2.cpp cameraV4L2/image_converter.cpp ai/yolov5.cpp main.cpp mainwindow.cpp CameraEngine.cpp YoloEngine.cpp GLWidget.cpp egl/EGLManager.cpp egl/GLRenderer.cpp egl/Matrix4.cpp egl/Mesh.cpp egl/Shader.cpp egl/Sprite.cpp egl/Texture.cpp egl/YUVTexture.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 	$(COPY_FILE) --parents ai_csi_test_zh_CN.ts $(DISTDIR)/
 
@@ -550,11 +690,11 @@ compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: ../qt-arm-sdk/mkspecs/features/data/dummy.cpp
-	aarch64-linux-gnu-g++ -pipe -fopenmp -O2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h ../qt-arm-sdk/mkspecs/features/data/dummy.cpp
+	aarch64-linux-gnu-g++ -pipe -fopenmp -DEGL_FBDEV=1 -std=c++11 -O2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h ../qt-arm-sdk/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_mainwindow.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_GLWidget.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_GLWidget.cpp
 moc_mainwindow.cpp: mainwindow.h \
 		../qt-arm-sdk/include/QtWidgets/QMainWindow \
 		../qt-arm-sdk/include/QtWidgets/qmainwindow.h \
@@ -675,6 +815,21 @@ moc_mainwindow.cpp: mainwindow.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplestl.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplemath.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplevk.h \
+		../../test/t507_gpu/include/vulkan/vulkan.h \
+		../../test/t507_gpu/include/vulkan/vk_platform.h \
+		../../test/t507_gpu/include/vulkan/vulkan_core.h \
+		../../test/t507_gpu/include/vulkan/vulkan_android.h \
+		../../test/t507_gpu/include/vulkan/vulkan_fuchsia.h \
+		../../test/t507_gpu/include/vulkan/vulkan_ios.h \
+		../../test/t507_gpu/include/vulkan/vulkan_macos.h \
+		../../test/t507_gpu/include/vulkan/vulkan_metal.h \
+		../../test/t507_gpu/include/vulkan/vulkan_vi.h \
+		../../test/t507_gpu/include/vulkan/vulkan_wayland.h \
+		../../test/t507_gpu/include/vulkan/vulkan_win32.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xcb.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xlib.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xlib_xrandr.h \
+		../../test/t507_gpu/include/vulkan/vulkan_ggp.h \
 		../../ai_learn/ncnn-install/include/ncnn/vulkan_header_fix.h \
 		../../ai_learn/ncnn-install/include/ncnn/allocator.h \
 		../../ai_learn/ncnn-install/include/ncnn/option.h \
@@ -689,6 +844,7 @@ moc_mainwindow.cpp: mainwindow.h \
 		CameraEngine.h \
 		cameraV4L2/CameraV4L2.h \
 		YoloEngine.h \
+		GLWidget.h \
 		../qt-arm-sdk/include/QtWidgets/QOpenGLWidget \
 		../qt-arm-sdk/include/QtWidgets/qopenglwidget.h \
 		../qt-arm-sdk/include/QtWidgets/QWidget \
@@ -696,17 +852,162 @@ moc_mainwindow.cpp: mainwindow.h \
 		../qt-arm-sdk/include/QtGui/qsurfaceformat.h \
 		../qt-arm-sdk/include/QtGui/qopengl.h \
 		../qt-arm-sdk/include/QtCore/qt_windows.h \
+		../../test/t507_gpu/include/GLES3/gl32.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h \
+		../../test/t507_gpu/include/GLES3/gl31.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES2/gl2.h \
+		../../test/t507_gpu/include/GLES2/gl2platform.h \
 		../qt-arm-sdk/include/QtGui/qopengles2ext.h \
 		../qt-arm-sdk/include/QtGui/qopenglext.h \
-		../qt-arm-sdk/include/QtGui/QOpenGLFunctions \
-		../qt-arm-sdk/include/QtGui/qopenglfunctions.h \
-		../qt-arm-sdk/include/QtGui/qopenglcontext.h \
-		../qt-arm-sdk/include/QtCore/QObject \
-		../qt-arm-sdk/include/QtCore/QScopedPointer \
-		../qt-arm-sdk/include/QtGui/qopenglversionfunctions.h \
+		egl/GLRenderer.h \
+		../../test/t507_gpu/include/EGL/egl.h \
+		../../test/t507_gpu/include/EGL/eglplatform.h \
+		../../test/t507_gpu/include/EGL/mali_fbdev_types.h \
+		egl/Matrix4.h \
+		egl/Mesh.h \
+		egl/Shader.h \
+		egl/Sprite.h \
+		egl/Texture.h \
+		egl/YUVTexture.h \
 		moc_predefs.h \
 		../qt-arm-sdk/bin/moc
-	/mnt/share/qt/qt-arm-sdk/bin/moc $(DEFINES) --include /mnt/share/qt/ai_csi_test/moc_predefs.h -I/mnt/share/qt/qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++ -I/mnt/share/qt/ai_csi_test -I/mnt/share/qt/ai_csi_test -I/mnt/share/qt/ai_csi_test/cameraV4L2 -I/mnt/share/qt/ai_csi_test/ai -I/mnt/share/ai_learn/ncnn-install/include/ncnn -I/mnt/share/qt/qt-arm-sdk/include -I/mnt/share/qt/qt-arm-sdk/include/QtWidgets -I/mnt/share/qt/qt-arm-sdk/include/QtGui -I/mnt/share/qt/qt-arm-sdk/include/QtCore -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1 -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1/aarch64-linux-gnu -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1/backward -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1/include -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1/include-fixed -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include mainwindow.h -o moc_mainwindow.cpp
+	/mnt/share/qt/qt-arm-sdk/bin/moc $(DEFINES) --include /mnt/share/qt/ai_csi_test/moc_predefs.h -I/mnt/share/qt/qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++ -I/mnt/share/qt/ai_csi_test -I/mnt/share/qt/ai_csi_test -I/mnt/share/qt/ai_csi_test/cameraV4L2 -I/mnt/share/qt/ai_csi_test/ai -I/mnt/share/qt/ai_csi_test/egl -I/mnt/share/ai_learn/ncnn-install/include/ncnn -I/mnt/share/test/t507_gpu/include -I/mnt/share/qt/qt-arm-sdk/include -I/mnt/share/qt/qt-arm-sdk/include/QtWidgets -I/mnt/share/qt/qt-arm-sdk/include/QtGui -I/mnt/share/qt/qt-arm-sdk/include/QtCore -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1 -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1/aarch64-linux-gnu -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1/backward -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1/include -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1/include-fixed -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include mainwindow.h -o moc_mainwindow.cpp
+
+moc_GLWidget.cpp: GLWidget.h \
+		../qt-arm-sdk/include/QtWidgets/QOpenGLWidget \
+		../qt-arm-sdk/include/QtWidgets/qopenglwidget.h \
+		../qt-arm-sdk/include/QtWidgets/qtwidgetsglobal.h \
+		../qt-arm-sdk/include/QtGui/qtguiglobal.h \
+		../qt-arm-sdk/include/QtCore/qglobal.h \
+		../qt-arm-sdk/include/QtCore/qconfig-bootstrapped.h \
+		../qt-arm-sdk/include/QtCore/qconfig.h \
+		../qt-arm-sdk/include/QtCore/qtcore-config.h \
+		../qt-arm-sdk/include/QtCore/qsystemdetection.h \
+		../qt-arm-sdk/include/QtCore/qprocessordetection.h \
+		../qt-arm-sdk/include/QtCore/qcompilerdetection.h \
+		../qt-arm-sdk/include/QtCore/qtypeinfo.h \
+		../qt-arm-sdk/include/QtCore/qsysinfo.h \
+		../qt-arm-sdk/include/QtCore/qlogging.h \
+		../qt-arm-sdk/include/QtCore/qflags.h \
+		../qt-arm-sdk/include/QtCore/qatomic.h \
+		../qt-arm-sdk/include/QtCore/qbasicatomic.h \
+		../qt-arm-sdk/include/QtCore/qatomic_bootstrap.h \
+		../qt-arm-sdk/include/QtCore/qgenericatomic.h \
+		../qt-arm-sdk/include/QtCore/qatomic_cxx11.h \
+		../qt-arm-sdk/include/QtCore/qatomic_msvc.h \
+		../qt-arm-sdk/include/QtCore/qglobalstatic.h \
+		../qt-arm-sdk/include/QtCore/qmutex.h \
+		../qt-arm-sdk/include/QtCore/qnumeric.h \
+		../qt-arm-sdk/include/QtCore/qversiontagging.h \
+		../qt-arm-sdk/include/QtGui/qtgui-config.h \
+		../qt-arm-sdk/include/QtWidgets/qtwidgets-config.h \
+		../qt-arm-sdk/include/QtWidgets/QWidget \
+		../qt-arm-sdk/include/QtWidgets/qwidget.h \
+		../qt-arm-sdk/include/QtGui/qwindowdefs.h \
+		../qt-arm-sdk/include/QtCore/qobjectdefs.h \
+		../qt-arm-sdk/include/QtCore/qnamespace.h \
+		../qt-arm-sdk/include/QtCore/qobjectdefs_impl.h \
+		../qt-arm-sdk/include/QtGui/qwindowdefs_win.h \
+		../qt-arm-sdk/include/QtCore/qobject.h \
+		../qt-arm-sdk/include/QtCore/qstring.h \
+		../qt-arm-sdk/include/QtCore/qchar.h \
+		../qt-arm-sdk/include/QtCore/qbytearray.h \
+		../qt-arm-sdk/include/QtCore/qrefcount.h \
+		../qt-arm-sdk/include/QtCore/qarraydata.h \
+		../qt-arm-sdk/include/QtCore/qstringliteral.h \
+		../qt-arm-sdk/include/QtCore/qstringalgorithms.h \
+		../qt-arm-sdk/include/QtCore/qstringview.h \
+		../qt-arm-sdk/include/QtCore/qstringbuilder.h \
+		../qt-arm-sdk/include/QtCore/qlist.h \
+		../qt-arm-sdk/include/QtCore/qalgorithms.h \
+		../qt-arm-sdk/include/QtCore/qiterator.h \
+		../qt-arm-sdk/include/QtCore/qhashfunctions.h \
+		../qt-arm-sdk/include/QtCore/qpair.h \
+		../qt-arm-sdk/include/QtCore/qbytearraylist.h \
+		../qt-arm-sdk/include/QtCore/qstringlist.h \
+		../qt-arm-sdk/include/QtCore/qregexp.h \
+		../qt-arm-sdk/include/QtCore/qstringmatcher.h \
+		../qt-arm-sdk/include/QtCore/qcoreevent.h \
+		../qt-arm-sdk/include/QtCore/qscopedpointer.h \
+		../qt-arm-sdk/include/QtCore/qmetatype.h \
+		../qt-arm-sdk/include/QtCore/qvarlengtharray.h \
+		../qt-arm-sdk/include/QtCore/qcontainerfwd.h \
+		../qt-arm-sdk/include/QtCore/qobject_impl.h \
+		../qt-arm-sdk/include/QtCore/qmargins.h \
+		../qt-arm-sdk/include/QtGui/qpaintdevice.h \
+		../qt-arm-sdk/include/QtCore/qrect.h \
+		../qt-arm-sdk/include/QtCore/qsize.h \
+		../qt-arm-sdk/include/QtCore/qpoint.h \
+		../qt-arm-sdk/include/QtGui/qpalette.h \
+		../qt-arm-sdk/include/QtGui/qcolor.h \
+		../qt-arm-sdk/include/QtGui/qrgb.h \
+		../qt-arm-sdk/include/QtGui/qrgba64.h \
+		../qt-arm-sdk/include/QtGui/qbrush.h \
+		../qt-arm-sdk/include/QtCore/qvector.h \
+		../qt-arm-sdk/include/QtGui/qmatrix.h \
+		../qt-arm-sdk/include/QtGui/qpolygon.h \
+		../qt-arm-sdk/include/QtGui/qregion.h \
+		../qt-arm-sdk/include/QtCore/qdatastream.h \
+		../qt-arm-sdk/include/QtCore/qiodevice.h \
+		../qt-arm-sdk/include/QtCore/qline.h \
+		../qt-arm-sdk/include/QtGui/qtransform.h \
+		../qt-arm-sdk/include/QtGui/qpainterpath.h \
+		../qt-arm-sdk/include/QtGui/qimage.h \
+		../qt-arm-sdk/include/QtGui/qpixelformat.h \
+		../qt-arm-sdk/include/QtGui/qpixmap.h \
+		../qt-arm-sdk/include/QtCore/qsharedpointer.h \
+		../qt-arm-sdk/include/QtCore/qshareddata.h \
+		../qt-arm-sdk/include/QtCore/qhash.h \
+		../qt-arm-sdk/include/QtCore/qsharedpointer_impl.h \
+		../qt-arm-sdk/include/QtGui/qfont.h \
+		../qt-arm-sdk/include/QtGui/qfontmetrics.h \
+		../qt-arm-sdk/include/QtGui/qfontinfo.h \
+		../qt-arm-sdk/include/QtWidgets/qsizepolicy.h \
+		../qt-arm-sdk/include/QtGui/qcursor.h \
+		../qt-arm-sdk/include/QtGui/qkeysequence.h \
+		../qt-arm-sdk/include/QtGui/qevent.h \
+		../qt-arm-sdk/include/QtCore/qvariant.h \
+		../qt-arm-sdk/include/QtCore/qmap.h \
+		../qt-arm-sdk/include/QtCore/qdebug.h \
+		../qt-arm-sdk/include/QtCore/qtextstream.h \
+		../qt-arm-sdk/include/QtCore/qlocale.h \
+		../qt-arm-sdk/include/QtCore/qset.h \
+		../qt-arm-sdk/include/QtCore/qcontiguouscache.h \
+		../qt-arm-sdk/include/QtCore/qurl.h \
+		../qt-arm-sdk/include/QtCore/qurlquery.h \
+		../qt-arm-sdk/include/QtCore/qfile.h \
+		../qt-arm-sdk/include/QtCore/qfiledevice.h \
+		../qt-arm-sdk/include/QtGui/qvector2d.h \
+		../qt-arm-sdk/include/QtGui/qtouchdevice.h \
+		../qt-arm-sdk/include/QtGui/QSurfaceFormat \
+		../qt-arm-sdk/include/QtGui/qsurfaceformat.h \
+		../qt-arm-sdk/include/QtGui/qopengl.h \
+		../qt-arm-sdk/include/QtCore/qt_windows.h \
+		../../test/t507_gpu/include/GLES3/gl32.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h \
+		../../test/t507_gpu/include/GLES3/gl31.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES2/gl2.h \
+		../../test/t507_gpu/include/GLES2/gl2platform.h \
+		../qt-arm-sdk/include/QtGui/qopengles2ext.h \
+		../qt-arm-sdk/include/QtGui/qopenglext.h \
+		egl/GLRenderer.h \
+		../../test/t507_gpu/include/EGL/egl.h \
+		../../test/t507_gpu/include/EGL/eglplatform.h \
+		../../test/t507_gpu/include/EGL/mali_fbdev_types.h \
+		egl/Matrix4.h \
+		egl/Mesh.h \
+		egl/Shader.h \
+		egl/Sprite.h \
+		egl/Texture.h \
+		egl/YUVTexture.h \
+		Frame.h \
+		moc_predefs.h \
+		../qt-arm-sdk/bin/moc
+	/mnt/share/qt/qt-arm-sdk/bin/moc $(DEFINES) --include /mnt/share/qt/ai_csi_test/moc_predefs.h -I/mnt/share/qt/qt-arm-sdk/mkspecs/linux-aarch64-gnu-g++ -I/mnt/share/qt/ai_csi_test -I/mnt/share/qt/ai_csi_test -I/mnt/share/qt/ai_csi_test/cameraV4L2 -I/mnt/share/qt/ai_csi_test/ai -I/mnt/share/qt/ai_csi_test/egl -I/mnt/share/ai_learn/ncnn-install/include/ncnn -I/mnt/share/test/t507_gpu/include -I/mnt/share/qt/qt-arm-sdk/include -I/mnt/share/qt/qt-arm-sdk/include/QtWidgets -I/mnt/share/qt/qt-arm-sdk/include/QtGui -I/mnt/share/qt/qt-arm-sdk/include/QtCore -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1 -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1/aarch64-linux-gnu -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include/c++/5.3.1/backward -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1/include -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.3.1/include-fixed -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/include -I/home/gg/qt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include GLWidget.h -o moc_GLWidget.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -749,6 +1050,21 @@ yolov5.o: ai/yolov5.cpp ai/yolov5.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplestl.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplemath.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplevk.h \
+		../../test/t507_gpu/include/vulkan/vulkan.h \
+		../../test/t507_gpu/include/vulkan/vk_platform.h \
+		../../test/t507_gpu/include/vulkan/vulkan_core.h \
+		../../test/t507_gpu/include/vulkan/vulkan_android.h \
+		../../test/t507_gpu/include/vulkan/vulkan_fuchsia.h \
+		../../test/t507_gpu/include/vulkan/vulkan_ios.h \
+		../../test/t507_gpu/include/vulkan/vulkan_macos.h \
+		../../test/t507_gpu/include/vulkan/vulkan_metal.h \
+		../../test/t507_gpu/include/vulkan/vulkan_vi.h \
+		../../test/t507_gpu/include/vulkan/vulkan_wayland.h \
+		../../test/t507_gpu/include/vulkan/vulkan_win32.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xcb.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xlib.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xlib_xrandr.h \
+		../../test/t507_gpu/include/vulkan/vulkan_ggp.h \
 		../../ai_learn/ncnn-install/include/ncnn/vulkan_header_fix.h \
 		../../ai_learn/ncnn-install/include/ncnn/allocator.h \
 		../../ai_learn/ncnn-install/include/ncnn/option.h \
@@ -946,6 +1262,21 @@ main.o: main.cpp mainwindow.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplestl.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplemath.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplevk.h \
+		../../test/t507_gpu/include/vulkan/vulkan.h \
+		../../test/t507_gpu/include/vulkan/vk_platform.h \
+		../../test/t507_gpu/include/vulkan/vulkan_core.h \
+		../../test/t507_gpu/include/vulkan/vulkan_android.h \
+		../../test/t507_gpu/include/vulkan/vulkan_fuchsia.h \
+		../../test/t507_gpu/include/vulkan/vulkan_ios.h \
+		../../test/t507_gpu/include/vulkan/vulkan_macos.h \
+		../../test/t507_gpu/include/vulkan/vulkan_metal.h \
+		../../test/t507_gpu/include/vulkan/vulkan_vi.h \
+		../../test/t507_gpu/include/vulkan/vulkan_wayland.h \
+		../../test/t507_gpu/include/vulkan/vulkan_win32.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xcb.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xlib.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xlib_xrandr.h \
+		../../test/t507_gpu/include/vulkan/vulkan_ggp.h \
 		../../ai_learn/ncnn-install/include/ncnn/vulkan_header_fix.h \
 		../../ai_learn/ncnn-install/include/ncnn/allocator.h \
 		../../ai_learn/ncnn-install/include/ncnn/option.h \
@@ -960,6 +1291,7 @@ main.o: main.cpp mainwindow.h \
 		CameraEngine.h \
 		cameraV4L2/CameraV4L2.h \
 		YoloEngine.h \
+		GLWidget.h \
 		../qt-arm-sdk/include/QtWidgets/QOpenGLWidget \
 		../qt-arm-sdk/include/QtWidgets/qopenglwidget.h \
 		../qt-arm-sdk/include/QtWidgets/QWidget \
@@ -967,14 +1299,25 @@ main.o: main.cpp mainwindow.h \
 		../qt-arm-sdk/include/QtGui/qsurfaceformat.h \
 		../qt-arm-sdk/include/QtGui/qopengl.h \
 		../qt-arm-sdk/include/QtCore/qt_windows.h \
+		../../test/t507_gpu/include/GLES3/gl32.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h \
+		../../test/t507_gpu/include/GLES3/gl31.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES2/gl2.h \
+		../../test/t507_gpu/include/GLES2/gl2platform.h \
 		../qt-arm-sdk/include/QtGui/qopengles2ext.h \
 		../qt-arm-sdk/include/QtGui/qopenglext.h \
-		../qt-arm-sdk/include/QtGui/QOpenGLFunctions \
-		../qt-arm-sdk/include/QtGui/qopenglfunctions.h \
-		../qt-arm-sdk/include/QtGui/qopenglcontext.h \
-		../qt-arm-sdk/include/QtCore/QObject \
-		../qt-arm-sdk/include/QtCore/QScopedPointer \
-		../qt-arm-sdk/include/QtGui/qopenglversionfunctions.h \
+		egl/GLRenderer.h \
+		../../test/t507_gpu/include/EGL/egl.h \
+		../../test/t507_gpu/include/EGL/eglplatform.h \
+		../../test/t507_gpu/include/EGL/mali_fbdev_types.h \
+		egl/Matrix4.h \
+		egl/Mesh.h \
+		egl/Shader.h \
+		egl/Sprite.h \
+		egl/Texture.h \
+		egl/YUVTexture.h \
 		../qt-arm-sdk/include/QtWidgets/QApplication \
 		../qt-arm-sdk/include/QtWidgets/qapplication.h \
 		../qt-arm-sdk/include/QtCore/qcoreapplication.h \
@@ -1104,6 +1447,21 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplestl.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplemath.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplevk.h \
+		../../test/t507_gpu/include/vulkan/vulkan.h \
+		../../test/t507_gpu/include/vulkan/vk_platform.h \
+		../../test/t507_gpu/include/vulkan/vulkan_core.h \
+		../../test/t507_gpu/include/vulkan/vulkan_android.h \
+		../../test/t507_gpu/include/vulkan/vulkan_fuchsia.h \
+		../../test/t507_gpu/include/vulkan/vulkan_ios.h \
+		../../test/t507_gpu/include/vulkan/vulkan_macos.h \
+		../../test/t507_gpu/include/vulkan/vulkan_metal.h \
+		../../test/t507_gpu/include/vulkan/vulkan_vi.h \
+		../../test/t507_gpu/include/vulkan/vulkan_wayland.h \
+		../../test/t507_gpu/include/vulkan/vulkan_win32.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xcb.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xlib.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xlib_xrandr.h \
+		../../test/t507_gpu/include/vulkan/vulkan_ggp.h \
 		../../ai_learn/ncnn-install/include/ncnn/vulkan_header_fix.h \
 		../../ai_learn/ncnn-install/include/ncnn/allocator.h \
 		../../ai_learn/ncnn-install/include/ncnn/option.h \
@@ -1118,6 +1476,7 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		CameraEngine.h \
 		cameraV4L2/CameraV4L2.h \
 		YoloEngine.h \
+		GLWidget.h \
 		../qt-arm-sdk/include/QtWidgets/QOpenGLWidget \
 		../qt-arm-sdk/include/QtWidgets/qopenglwidget.h \
 		../qt-arm-sdk/include/QtWidgets/QWidget \
@@ -1125,14 +1484,25 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		../qt-arm-sdk/include/QtGui/qsurfaceformat.h \
 		../qt-arm-sdk/include/QtGui/qopengl.h \
 		../qt-arm-sdk/include/QtCore/qt_windows.h \
+		../../test/t507_gpu/include/GLES3/gl32.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h \
+		../../test/t507_gpu/include/GLES3/gl31.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES2/gl2.h \
+		../../test/t507_gpu/include/GLES2/gl2platform.h \
 		../qt-arm-sdk/include/QtGui/qopengles2ext.h \
 		../qt-arm-sdk/include/QtGui/qopenglext.h \
-		../qt-arm-sdk/include/QtGui/QOpenGLFunctions \
-		../qt-arm-sdk/include/QtGui/qopenglfunctions.h \
-		../qt-arm-sdk/include/QtGui/qopenglcontext.h \
-		../qt-arm-sdk/include/QtCore/QObject \
-		../qt-arm-sdk/include/QtCore/QScopedPointer \
-		../qt-arm-sdk/include/QtGui/qopenglversionfunctions.h \
+		egl/GLRenderer.h \
+		../../test/t507_gpu/include/EGL/egl.h \
+		../../test/t507_gpu/include/EGL/eglplatform.h \
+		../../test/t507_gpu/include/EGL/mali_fbdev_types.h \
+		egl/Matrix4.h \
+		egl/Mesh.h \
+		egl/Shader.h \
+		egl/Sprite.h \
+		egl/Texture.h \
+		egl/YUVTexture.h \
 		ui_mainwindow.h \
 		../qt-arm-sdk/include/QtCore/QVariant \
 		../qt-arm-sdk/include/QtWidgets/QAction \
@@ -1178,6 +1548,21 @@ YoloEngine.o: YoloEngine.cpp YoloEngine.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplestl.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplemath.h \
 		../../ai_learn/ncnn-install/include/ncnn/simplevk.h \
+		../../test/t507_gpu/include/vulkan/vulkan.h \
+		../../test/t507_gpu/include/vulkan/vk_platform.h \
+		../../test/t507_gpu/include/vulkan/vulkan_core.h \
+		../../test/t507_gpu/include/vulkan/vulkan_android.h \
+		../../test/t507_gpu/include/vulkan/vulkan_fuchsia.h \
+		../../test/t507_gpu/include/vulkan/vulkan_ios.h \
+		../../test/t507_gpu/include/vulkan/vulkan_macos.h \
+		../../test/t507_gpu/include/vulkan/vulkan_metal.h \
+		../../test/t507_gpu/include/vulkan/vulkan_vi.h \
+		../../test/t507_gpu/include/vulkan/vulkan_wayland.h \
+		../../test/t507_gpu/include/vulkan/vulkan_win32.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xcb.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xlib.h \
+		../../test/t507_gpu/include/vulkan/vulkan_xlib_xrandr.h \
+		../../test/t507_gpu/include/vulkan/vulkan_ggp.h \
 		../../ai_learn/ncnn-install/include/ncnn/vulkan_header_fix.h \
 		../../ai_learn/ncnn-install/include/ncnn/allocator.h \
 		../../ai_learn/ncnn-install/include/ncnn/option.h \
@@ -1190,8 +1575,208 @@ YoloEngine.o: YoloEngine.cpp YoloEngine.h \
 		Frame.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o YoloEngine.o YoloEngine.cpp
 
+GLWidget.o: GLWidget.cpp GLWidget.h \
+		../qt-arm-sdk/include/QtWidgets/QOpenGLWidget \
+		../qt-arm-sdk/include/QtWidgets/qopenglwidget.h \
+		../qt-arm-sdk/include/QtWidgets/qtwidgetsglobal.h \
+		../qt-arm-sdk/include/QtGui/qtguiglobal.h \
+		../qt-arm-sdk/include/QtCore/qglobal.h \
+		../qt-arm-sdk/include/QtCore/qconfig-bootstrapped.h \
+		../qt-arm-sdk/include/QtCore/qconfig.h \
+		../qt-arm-sdk/include/QtCore/qtcore-config.h \
+		../qt-arm-sdk/include/QtCore/qsystemdetection.h \
+		../qt-arm-sdk/include/QtCore/qprocessordetection.h \
+		../qt-arm-sdk/include/QtCore/qcompilerdetection.h \
+		../qt-arm-sdk/include/QtCore/qtypeinfo.h \
+		../qt-arm-sdk/include/QtCore/qsysinfo.h \
+		../qt-arm-sdk/include/QtCore/qlogging.h \
+		../qt-arm-sdk/include/QtCore/qflags.h \
+		../qt-arm-sdk/include/QtCore/qatomic.h \
+		../qt-arm-sdk/include/QtCore/qbasicatomic.h \
+		../qt-arm-sdk/include/QtCore/qatomic_bootstrap.h \
+		../qt-arm-sdk/include/QtCore/qgenericatomic.h \
+		../qt-arm-sdk/include/QtCore/qatomic_cxx11.h \
+		../qt-arm-sdk/include/QtCore/qatomic_msvc.h \
+		../qt-arm-sdk/include/QtCore/qglobalstatic.h \
+		../qt-arm-sdk/include/QtCore/qmutex.h \
+		../qt-arm-sdk/include/QtCore/qnumeric.h \
+		../qt-arm-sdk/include/QtCore/qversiontagging.h \
+		../qt-arm-sdk/include/QtGui/qtgui-config.h \
+		../qt-arm-sdk/include/QtWidgets/qtwidgets-config.h \
+		../qt-arm-sdk/include/QtWidgets/QWidget \
+		../qt-arm-sdk/include/QtWidgets/qwidget.h \
+		../qt-arm-sdk/include/QtGui/qwindowdefs.h \
+		../qt-arm-sdk/include/QtCore/qobjectdefs.h \
+		../qt-arm-sdk/include/QtCore/qnamespace.h \
+		../qt-arm-sdk/include/QtCore/qobjectdefs_impl.h \
+		../qt-arm-sdk/include/QtGui/qwindowdefs_win.h \
+		../qt-arm-sdk/include/QtCore/qobject.h \
+		../qt-arm-sdk/include/QtCore/qstring.h \
+		../qt-arm-sdk/include/QtCore/qchar.h \
+		../qt-arm-sdk/include/QtCore/qbytearray.h \
+		../qt-arm-sdk/include/QtCore/qrefcount.h \
+		../qt-arm-sdk/include/QtCore/qarraydata.h \
+		../qt-arm-sdk/include/QtCore/qstringliteral.h \
+		../qt-arm-sdk/include/QtCore/qstringalgorithms.h \
+		../qt-arm-sdk/include/QtCore/qstringview.h \
+		../qt-arm-sdk/include/QtCore/qstringbuilder.h \
+		../qt-arm-sdk/include/QtCore/qlist.h \
+		../qt-arm-sdk/include/QtCore/qalgorithms.h \
+		../qt-arm-sdk/include/QtCore/qiterator.h \
+		../qt-arm-sdk/include/QtCore/qhashfunctions.h \
+		../qt-arm-sdk/include/QtCore/qpair.h \
+		../qt-arm-sdk/include/QtCore/qbytearraylist.h \
+		../qt-arm-sdk/include/QtCore/qstringlist.h \
+		../qt-arm-sdk/include/QtCore/qregexp.h \
+		../qt-arm-sdk/include/QtCore/qstringmatcher.h \
+		../qt-arm-sdk/include/QtCore/qcoreevent.h \
+		../qt-arm-sdk/include/QtCore/qscopedpointer.h \
+		../qt-arm-sdk/include/QtCore/qmetatype.h \
+		../qt-arm-sdk/include/QtCore/qvarlengtharray.h \
+		../qt-arm-sdk/include/QtCore/qcontainerfwd.h \
+		../qt-arm-sdk/include/QtCore/qobject_impl.h \
+		../qt-arm-sdk/include/QtCore/qmargins.h \
+		../qt-arm-sdk/include/QtGui/qpaintdevice.h \
+		../qt-arm-sdk/include/QtCore/qrect.h \
+		../qt-arm-sdk/include/QtCore/qsize.h \
+		../qt-arm-sdk/include/QtCore/qpoint.h \
+		../qt-arm-sdk/include/QtGui/qpalette.h \
+		../qt-arm-sdk/include/QtGui/qcolor.h \
+		../qt-arm-sdk/include/QtGui/qrgb.h \
+		../qt-arm-sdk/include/QtGui/qrgba64.h \
+		../qt-arm-sdk/include/QtGui/qbrush.h \
+		../qt-arm-sdk/include/QtCore/qvector.h \
+		../qt-arm-sdk/include/QtGui/qmatrix.h \
+		../qt-arm-sdk/include/QtGui/qpolygon.h \
+		../qt-arm-sdk/include/QtGui/qregion.h \
+		../qt-arm-sdk/include/QtCore/qdatastream.h \
+		../qt-arm-sdk/include/QtCore/qiodevice.h \
+		../qt-arm-sdk/include/QtCore/qline.h \
+		../qt-arm-sdk/include/QtGui/qtransform.h \
+		../qt-arm-sdk/include/QtGui/qpainterpath.h \
+		../qt-arm-sdk/include/QtGui/qimage.h \
+		../qt-arm-sdk/include/QtGui/qpixelformat.h \
+		../qt-arm-sdk/include/QtGui/qpixmap.h \
+		../qt-arm-sdk/include/QtCore/qsharedpointer.h \
+		../qt-arm-sdk/include/QtCore/qshareddata.h \
+		../qt-arm-sdk/include/QtCore/qhash.h \
+		../qt-arm-sdk/include/QtCore/qsharedpointer_impl.h \
+		../qt-arm-sdk/include/QtGui/qfont.h \
+		../qt-arm-sdk/include/QtGui/qfontmetrics.h \
+		../qt-arm-sdk/include/QtGui/qfontinfo.h \
+		../qt-arm-sdk/include/QtWidgets/qsizepolicy.h \
+		../qt-arm-sdk/include/QtGui/qcursor.h \
+		../qt-arm-sdk/include/QtGui/qkeysequence.h \
+		../qt-arm-sdk/include/QtGui/qevent.h \
+		../qt-arm-sdk/include/QtCore/qvariant.h \
+		../qt-arm-sdk/include/QtCore/qmap.h \
+		../qt-arm-sdk/include/QtCore/qdebug.h \
+		../qt-arm-sdk/include/QtCore/qtextstream.h \
+		../qt-arm-sdk/include/QtCore/qlocale.h \
+		../qt-arm-sdk/include/QtCore/qset.h \
+		../qt-arm-sdk/include/QtCore/qcontiguouscache.h \
+		../qt-arm-sdk/include/QtCore/qurl.h \
+		../qt-arm-sdk/include/QtCore/qurlquery.h \
+		../qt-arm-sdk/include/QtCore/qfile.h \
+		../qt-arm-sdk/include/QtCore/qfiledevice.h \
+		../qt-arm-sdk/include/QtGui/qvector2d.h \
+		../qt-arm-sdk/include/QtGui/qtouchdevice.h \
+		../qt-arm-sdk/include/QtGui/QSurfaceFormat \
+		../qt-arm-sdk/include/QtGui/qsurfaceformat.h \
+		../qt-arm-sdk/include/QtGui/qopengl.h \
+		../qt-arm-sdk/include/QtCore/qt_windows.h \
+		../../test/t507_gpu/include/GLES3/gl32.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h \
+		../../test/t507_gpu/include/GLES3/gl31.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES2/gl2.h \
+		../../test/t507_gpu/include/GLES2/gl2platform.h \
+		../qt-arm-sdk/include/QtGui/qopengles2ext.h \
+		../qt-arm-sdk/include/QtGui/qopenglext.h \
+		egl/GLRenderer.h \
+		../../test/t507_gpu/include/EGL/egl.h \
+		../../test/t507_gpu/include/EGL/eglplatform.h \
+		../../test/t507_gpu/include/EGL/mali_fbdev_types.h \
+		egl/Matrix4.h \
+		egl/Mesh.h \
+		egl/Shader.h \
+		egl/Sprite.h \
+		egl/Texture.h \
+		egl/YUVTexture.h \
+		Frame.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GLWidget.o GLWidget.cpp
+
+EGLManager.o: egl/EGLManager.cpp egl/EGLManager.h \
+		../../test/t507_gpu/include/EGL/egl.h \
+		../../test/t507_gpu/include/EGL/eglplatform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h \
+		../../test/t507_gpu/include/EGL/mali_fbdev_types.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o EGLManager.o egl/EGLManager.cpp
+
+GLRenderer.o: egl/GLRenderer.cpp egl/GLRenderer.h \
+		../../test/t507_gpu/include/EGL/egl.h \
+		../../test/t507_gpu/include/EGL/eglplatform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h \
+		../../test/t507_gpu/include/EGL/mali_fbdev_types.h \
+		../../test/t507_gpu/include/GLES2/gl2.h \
+		../../test/t507_gpu/include/GLES2/gl2platform.h \
+		egl/Matrix4.h \
+		egl/Mesh.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		egl/Shader.h \
+		egl/Sprite.h \
+		egl/Texture.h \
+		egl/YUVTexture.h \
+		Frame.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GLRenderer.o egl/GLRenderer.cpp
+
+Matrix4.o: egl/Matrix4.cpp egl/Matrix4.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Matrix4.o egl/Matrix4.cpp
+
+Mesh.o: egl/Mesh.cpp egl/Mesh.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Mesh.o egl/Mesh.cpp
+
+Shader.o: egl/Shader.cpp egl/Shader.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Shader.o egl/Shader.cpp
+
+Sprite.o: egl/Sprite.cpp egl/Sprite.h \
+		egl/Matrix4.h \
+		egl/Mesh.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h \
+		egl/Texture.h \
+		egl/YUVTexture.h \
+		Frame.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Sprite.o egl/Sprite.cpp
+
+Texture.o: egl/Texture.cpp egl/Texture.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Texture.o egl/Texture.cpp
+
+YUVTexture.o: egl/YUVTexture.cpp egl/YUVTexture.h \
+		egl/Texture.h \
+		../../test/t507_gpu/include/GLES3/gl3.h \
+		../../test/t507_gpu/include/GLES3/gl3platform.h \
+		../../test/t507_gpu/include/KHR/khrplatform.h \
+		Frame.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o YUVTexture.o egl/YUVTexture.cpp
+
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
+
+moc_GLWidget.o: moc_GLWidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_GLWidget.o moc_GLWidget.cpp
 
 ####### Install
 
