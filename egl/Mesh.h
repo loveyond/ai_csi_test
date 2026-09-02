@@ -41,6 +41,10 @@ public:
 
 
     void draw();
+    /*
+        用于需要动态更新的，每次画的图形形状及数量不同的
+    */
+    void update(const float* vertices, int vertexCount);
 
 
 private:

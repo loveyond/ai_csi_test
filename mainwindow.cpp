@@ -5,6 +5,7 @@
 #include <QElapsedTimer>
 #include <QFile>
 
+#include "image_converter.h"
 
 /*
 qt显示流程：摄像头   ->         YUV->       RGB memcpy->    QImage->    QLabel::setPixmap()->   Qt软件绘制
@@ -117,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->AI_reasoning_btn, &QPushButton::clicked, this, [=](bool checked){    
                 ai_reasoning_enable = checked;
                 
-                if(ai_reasoning_enable) cameraEngine.setInterval(160);   //yolov5s 320的用330，yolov5n 320的用160
+                if(ai_reasoning_enable) cameraEngine.setInterval(100);   //yolov5s 320的用330，yolov5n 320的用160
                 else cameraEngine.setInterval(50);
                 
                 timer->start(cameraEngine.getInterval());
@@ -177,9 +178,21 @@ void MainWindow::initTimer()
         if(frameBuffer.get(frame))
         {
             if(ai_reasoning_enable){
+            
+                if (frame.rgb.size() != static_cast<size_t>(frame.width * frame.height * 3) )
+                    frame.rgb.resize(frame.width * frame.height * 3);
+            
+                ImageConverter::YUV420ToRGB(
+                    frame.y.data(), frame.u.data(), frame.v.data(),
+                    frame.width, frame.height,
+                    frame.rgb.data()
+                    );
+                    
                 yoloEngine.process(frame);
+
+                glWidget->updateObjects(yoloEngine.getObjects());
                 
-                if(skip % 3 == 0)
+                if(skip % 10 == 0)
                     updateDisplay();
             }
             else {

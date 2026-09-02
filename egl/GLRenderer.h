@@ -48,11 +48,6 @@ public:
     void clear();
 
     void begin();
-private:
-
-//    static char *loadFile(const char *filename);
-//    static GLuint loadShader( GLenum type, const char *source);
-
 
 private:
 
@@ -80,9 +75,6 @@ private:
     Matrix4 projection;
     Matrix4 view;
 
-//    Texture textureY;
-//    Texture textureU;
-//    Texture textureV;
     
 };
 

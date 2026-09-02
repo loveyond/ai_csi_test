@@ -18,6 +18,17 @@ static const float rectangleVertices[] =
 };
 
 
+static const float boxVertices[20] =
+{
+    0, 0, 0, 0, 0,
+    1, 0, 0, 0, 0,
+    1, 1, 0, 0, 0,
+    0, 1, 0, 0, 0
+};
+
+
+
+
 /*
     在一个 1 × 1 的正方形里，生成一个圆的“圆心 + 圆周顶点”，每个顶点包含 x、y、z、u、v 5 个数据
     ┌────┬────┬────┬────┬────┐
@@ -122,6 +133,8 @@ void GLWidget::initializeGL()
         circleVertices.size() / 5,
         GL_TRIANGLE_FAN);
 
+    boxMesh = new Mesh(boxVertices, 4, GL_LINE_LOOP);   // GL_LINE_LOOP会自动连接每根线，形成四边形
+
     // 把 CPU 里的 RGB 图片数据，创建成 GPU 里的 2D Texture
     ImageFrame imageFrame;
     jpg2rgb(imageFrame);   
@@ -155,6 +168,19 @@ void GLWidget::initializeGL()
     circle1->setMoveSpeed(0);
     circle1->setOrbit(0.7f, 0.02f);
 
+//    for(int i = 0; i < MAX_BOXES; i++)
+//    {
+//        boxSprites[i] = new Sprite(boxMesh, 0, 0);
+//    
+//        boxSprites[i]->setColor(1, 0, 0, 1);    // R = 1 G = 0 B = 0 A = 1
+//        boxSprites[i]->setMoveSpeed(0);
+//        boxSprites[i]->setScaleSpeed(0);
+//        boxSprites[i]->setRotateSpeed(0);
+//    }
+    boxSprites[0] = new Sprite(boxMesh, 200, 200);
+    boxSprites[0]->setPosition(300, 200);
+    boxSprites[0]->setColor(1, 0, 0, 1);
+
     printf("initializeGL done\n");
 }
 
@@ -172,7 +198,12 @@ void GLWidget::paintGL()
     gl_renderer.draw(*photo1);
     gl_renderer.draw(*circle1);
     gl_renderer.draw(*camera1);
+
+//    for(int i = 0; i < boxCount; i++)
+//        gl_renderer.draw(*boxSprites[i]);
+    gl_renderer.draw(*boxSprites[0]);
 }
+
 
 
 // 准备摄像头数据
@@ -181,5 +212,56 @@ void GLWidget::updateFrame(const Frame& frame)
     camera1->updateCamera(frame);
     update();       // 通知 Qt：重新绘制,即调用paintGL
 }
+
+
+
+void GLWidget::updateObjects(const std::vector<Object>& newObjects)
+{
+    boxCount = std::min((int)newObjects.size(), MAX_BOXES);
+
+    float sx = 1024.0f / 1280.0f;
+    float sy = 600.0f / 720.0f;
+
+    for(int i = 0; i < boxCount; i++)
+    {
+        const Object& obj = newObjects[i];
+
+        boxSprites[i]->setPosition(
+            obj.rect.x * sx,
+            obj.rect.y * sy
+        );
+
+        boxSprites[i]->setScale(1.0f);
+
+        // 这里直接修改 width / height 还不行
+    }
+}
+
+
+
+void GLWidget::drawBox(const Object& obj, int imageWidth, int imageHeight)
+{
+    float sx = 1024.0f / imageWidth;
+    float sy = 600.0f / imageHeight;
+
+    float x1 = obj.rect.x * sx;
+    float y1 = obj.rect.y * sy;
+    float x2 = (obj.rect.x + obj.rect.width) * sx;
+    float y2 = (obj.rect.y + obj.rect.height) * sy;
+
+    float vertices[20] =
+    {
+        x1, y1, 0, 0, 0,
+        x2, y1, 0, 0, 0,
+        x2, y2, 0, 0, 0,
+        x1, y2, 0, 0, 0
+    };
+
+    boxMesh->update(vertices, 4);
+
+//    gl_renderer.draw(*boxMesh);
+}
+
+
 
 

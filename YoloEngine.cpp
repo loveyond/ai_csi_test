@@ -3,42 +3,8 @@
 // yolov5s 640大约1.1s, 320大约280ms
 // yolov5n 640大约600ms, 320大约150ms
 
-YoloEngine::YoloEngine()
-{
 
-}
 
-bool YoloEngine::init(){
-    return yolov5.load("yolov5n.bin", "yolov5n.param");
-}
-
-void YoloEngine::process(Frame& frame)
-{
-    objects.clear();
-    reasoning_results.clear();
-    
-    yolov5.detect(
-        frame.rgb.data(),
-        frame.width,
-        frame.height,
-        objects
-    );  // 4核 1135ms ，单核 3000ms, 4核320,320的只需300ms
-
-    yolov5.nms(objects,0.45f);
-    printf("ofter nms,objects size = %zu\n", objects.size()); // 容器里面有多少个元素.
-
-    for(auto& obj:objects)
-    {
-        draw_box(
-            frame.rgb.data(),
-            frame.width,
-            frame.height,
-            3,
-            obj
-        );
-    }
-
-}
 /*
 static const char* class_names[] = {
     "person", "bicycle", "car", "motorcycle", "airplane",
@@ -79,6 +45,71 @@ static const char* class_names[] = {
 };
 
 
+
+YoloEngine::YoloEngine()
+{
+
+}
+
+bool YoloEngine::init(){
+    return yolov5.load("yolov5n.bin", "yolov5n.param");
+}
+
+
+
+
+/*
+          Camera YUV
+              │
+     ┌────────┴────────┐
+     │                 │
+     ↓                 ↓
+Y/U/V Texture        YOLO
+     │                 │
+     │                 ↓
+     │              Objects
+     │                 │
+     ↓                 ↓
+YUV Shader        OpenGL画红框
+     │                 │
+     └────────┬────────┘
+              ↓
+             LCD
+*/
+void YoloEngine::process(Frame& frame)
+{
+    objects.clear();
+    reasoning_results.clear();
+    
+    yolov5.detect(
+        frame.rgb.data(),
+        frame.width,
+        frame.height,
+        objects
+    );  // 4核 1135ms ，单核 3000ms, 4核320,320的只需300ms
+
+    yolov5.nms(objects,0.45f);
+    printf("ofter nms,objects size = %zu\n", objects.size()); // 容器里面有多少个元素.
+
+    // 这里不画红框,由OpenGL画
+    for(auto& obj:objects)
+    {
+        reasoning_results.push_back(
+                        std::string(class_names[obj.label])
+                        + "," + std::to_string(obj.prob));
+
+//        draw_box(
+//            frame.rgb.data(),
+//            frame.width,
+//            frame.height,
+//            3,
+//            obj
+//        );
+    }
+
+}
+
+
 // 在RGB图像上画红色边框
 void YoloEngine::draw_box(unsigned char* img, int w, int h, int channels, const Object& obj)
 {
@@ -101,15 +132,6 @@ void YoloEngine::draw_box(unsigned char* img, int w, int h, int channels, const 
     x0 = std::max(0, x0);
     y0 = std::max(0, y0);
 
-//    int x_center = (int)(obj.rect.x * scale_x);
-//    int y_center = (int)(obj.rect.y * scale_y);
-//    int box_w = (int)(obj.rect.width * scale_x);
-//    int box_h = (int)(obj.rect.height * scale_y);
-//
-//    int x0 = std::max(0, x_center - box_w / 2);
-//    int y0 = std::max(0, y_center - box_h / 2);
-//    int x1 = std::min(w - 1, x_center + box_w / 2);
-//    int y1 = std::min(h - 1, y_center + box_h / 2);
 
     for (int y = y0; y <= y1; y++) {
         for (int x = x0; x <= x1; x++) {
@@ -124,9 +146,9 @@ void YoloEngine::draw_box(unsigned char* img, int w, int h, int channels, const 
     printf("label=%s prob=%.3f\n",
            class_names[obj.label],
            obj.prob);
-    reasoning_results.push_back(
-                    std::string(class_names[obj.label])
-                    + "," + std::to_string(obj.prob));
+//    reasoning_results.push_back(
+//                    std::string(class_names[obj.label])
+//                    + "," + std::to_string(obj.prob));
     
 }
 

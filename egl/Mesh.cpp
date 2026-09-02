@@ -88,5 +88,20 @@ void Mesh::draw()
 
 
 
+void Mesh::update(const float* vertices, int count)
+{
+    vertexCount = count;
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        count * 5 * sizeof(float),
+        vertices,
+        GL_DYNAMIC_DRAW
+    );
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
 
 

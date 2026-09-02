@@ -22,7 +22,12 @@ public:
     const std::vector<std::string>& getReasoningResults() const {
         return reasoning_results;
     }
-    
+
+    const std::vector<Object>& getObjects() const
+    {
+        return objects;
+    }
+
 private:
     Yolov5 yolov5;
 

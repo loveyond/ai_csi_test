@@ -4,6 +4,7 @@
 //#pragma once
 
 #include <QOpenGLWidget>
+#include <vector>
 
 #include "GLRenderer.h"
 #include "Sprite.h"
@@ -11,7 +12,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "Frame.h"
-
+#include "yolov5.h"
 
 /*
     负责接管原来 egl_test 里面的:
@@ -37,8 +38,13 @@ class GLWidget : public QOpenGLWidget
 public:
     explicit GLWidget(QWidget *parent = nullptr);       // explicit 禁止编译器把一个参数自动转换成 GLWidget
 
-    void updateFrame(const Frame& frame);
-    
+    void updateFrame(const Frame& frame);       // // 准备摄像头数据
+
+    void updateObjects(const std::vector<Object>& objects);     // 准备红框数据.
+
+    void drawBox(const Object& obj, int imageWidth, int imageHeight);
+
+
 protected:
     /*
         OpenGL 环境准备好以后，Qt调用这个函数
@@ -56,6 +62,8 @@ private:
 
     Mesh* quad;
     Mesh* circle;
+    
+    Mesh* boxMesh;              // 动态更新的mesh
 
     Texture texture;
     YUVTexture cameraTexture;
@@ -64,6 +72,11 @@ private:
     Sprite* photo1;
     Sprite* circle1;
 
+    static const int MAX_BOXES = 20;
+    Sprite* boxSprites[MAX_BOXES];
+    int boxCount;   // 识别的红框数量.
+    
+    std::vector<Object> objects;    // 用于画ai识别的红框.
 
 };
 
