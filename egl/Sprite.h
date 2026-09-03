@@ -54,7 +54,7 @@ public:
 
     Sprite(Mesh* mesh, float width, float height);
 
-
+    void setSize(float width, float height);
     void setPosition(float x, float y); //设置位置
     void setScale(float s); // 设置缩放
     void setAngle(float angle);  // 设置旋转

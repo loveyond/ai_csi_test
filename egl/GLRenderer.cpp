@@ -72,10 +72,18 @@ bool GLRenderer::init()
 
 
     projection = Matrix4::ortho(0, 1024, 600, 0, -1, 1);
-    view = Matrix4::translate(-1, 0, 0);
+    view = Matrix4::translate(0, 0, 0);
 
     
     return true;
+}
+
+
+
+void GLRenderer::resize(int w, int h)
+{
+    glViewport(0, 0, w, h);
+    projection = Matrix4::ortho(0, w, h, 0, -1, 1);
 }
 
 

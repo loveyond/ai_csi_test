@@ -49,6 +49,8 @@ public:
 
     void begin();
 
+    void resize(int w, int h);
+
 private:
 
     GLuint program;

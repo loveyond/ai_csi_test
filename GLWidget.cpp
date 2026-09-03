@@ -145,9 +145,10 @@ void GLWidget::initializeGL()
     stbi_image_free(imageFrame.img);
 
 // 创建sprite
-    camera1 = new Sprite(quad, 320, 200);
-    camera1->setPosition(1024/2,600/2);
-    camera1->setMoveSpeed(2);
+    printf("GLWidget width=%d,height=%d\n",width(),height());
+    camera1 = new Sprite(quad, width(), height());
+    camera1->setPosition(width()/2,height()/2);
+    camera1->setMoveSpeed(0);
     camera1->setScaleSpeed(0);
     camera1->setRotateSpeed(0);
     camera1->setYUVTexture(&cameraTexture);
@@ -168,18 +169,18 @@ void GLWidget::initializeGL()
     circle1->setMoveSpeed(0);
     circle1->setOrbit(0.7f, 0.02f);
 
-//    for(int i = 0; i < MAX_BOXES; i++)
-//    {
-//        boxSprites[i] = new Sprite(boxMesh, 0, 0);
-//    
-//        boxSprites[i]->setColor(1, 0, 0, 1);    // R = 1 G = 0 B = 0 A = 1
-//        boxSprites[i]->setMoveSpeed(0);
-//        boxSprites[i]->setScaleSpeed(0);
-//        boxSprites[i]->setRotateSpeed(0);
-//    }
-    boxSprites[0] = new Sprite(boxMesh, 200, 200);
-    boxSprites[0]->setPosition(300, 200);
-    boxSprites[0]->setColor(1, 0, 0, 1);
+    for(int i = 0; i < MAX_BOXES; i++)
+    {
+        boxSprites[i] = new Sprite(boxMesh, 0, 0);
+    
+        boxSprites[i]->setColor(1, 0, 0, 1);    // R = 1 G = 0 B = 0 A = 1
+        boxSprites[i]->setMoveSpeed(0);
+        boxSprites[i]->setScaleSpeed(0);
+        boxSprites[i]->setRotateSpeed(0);
+    }
+//    boxSprites[0] = new Sprite(boxMesh, 200, 200);
+//    boxSprites[0]->setPosition(300, 200);
+//    boxSprites[0]->setColor(1, 0, 0, 1);
 
     printf("initializeGL done\n");
 }
@@ -195,13 +196,13 @@ void GLWidget::paintGL()
     circle1->update();
     camera1->update();
 
-    gl_renderer.draw(*photo1);
-    gl_renderer.draw(*circle1);
+//    gl_renderer.draw(*photo1);
+//    gl_renderer.draw(*circle1);
     gl_renderer.draw(*camera1);
 
-//    for(int i = 0; i < boxCount; i++)
-//        gl_renderer.draw(*boxSprites[i]);
-    gl_renderer.draw(*boxSprites[0]);
+    for(int i = 0; i < boxCount; i++)
+        gl_renderer.draw(*boxSprites[i]);
+        
 }
 
 
@@ -219,48 +220,58 @@ void GLWidget::updateObjects(const std::vector<Object>& newObjects)
 {
     boxCount = std::min((int)newObjects.size(), MAX_BOXES);
 
-    float sx = 1024.0f / 1280.0f;
-    float sy = 600.0f / 720.0f;
+    float sx = (float)width() / 320.0f;     // 这里的320 和 Yolov5::detect的 ncnn::Mat in = ncnn::Mat::from_pixels_resize(rgb_data, ncnn::Mat::PIXEL_RGB, w, h, 320, 320); 对应
+    float sy = (float)height() / 320.0f;
 
     for(int i = 0; i < boxCount; i++)
     {
         const Object& obj = newObjects[i];
 
         boxSprites[i]->setPosition(
-            obj.rect.x * sx,
-            obj.rect.y * sy
+            (obj.rect.x + obj.rect.width / 2.0f) * sx,
+            (obj.rect.y + obj.rect.height / 2.0f) * sy
         );
 
-        boxSprites[i]->setScale(1.0f);
 
-        // 这里直接修改 width / height 还不行
+        boxSprites[i]->setSize(
+            obj.rect.width * sx,
+            obj.rect.height * sy
+        );
+
     }
 }
 
 
 
-void GLWidget::drawBox(const Object& obj, int imageWidth, int imageHeight)
+void GLWidget::resizeGL(int w, int h)
 {
-    float sx = 1024.0f / imageWidth;
-    float sy = 600.0f / imageHeight;
-
-    float x1 = obj.rect.x * sx;
-    float y1 = obj.rect.y * sy;
-    float x2 = (obj.rect.x + obj.rect.width) * sx;
-    float y2 = (obj.rect.y + obj.rect.height) * sy;
-
-    float vertices[20] =
-    {
-        x1, y1, 0, 0, 0,
-        x2, y1, 0, 0, 0,
-        x2, y2, 0, 0, 0,
-        x1, y2, 0, 0, 0
-    };
-
-    boxMesh->update(vertices, 4);
-
-//    gl_renderer.draw(*boxMesh);
+    gl_renderer.resize(w, h);
 }
+
+
+
+//void GLWidget::drawBox(const Object& obj, int imageWidth, int imageHeight)
+//{
+//    float sx = 1024.0f / imageWidth;
+//    float sy = 600.0f / imageHeight;
+//
+//    float x1 = obj.rect.x * sx;
+//    float y1 = obj.rect.y * sy;
+//    float x2 = (obj.rect.x + obj.rect.width) * sx;
+//    float y2 = (obj.rect.y + obj.rect.height) * sy;
+//
+//    float vertices[20] =
+//    {
+//        x1, y1, 0, 0, 0,
+//        x2, y1, 0, 0, 0,
+//        x2, y2, 0, 0, 0,
+//        x1, y2, 0, 0, 0
+//    };
+//
+//    boxMesh->update(vertices, 4);
+//
+////    gl_renderer.draw(*boxMesh);
+//}
 
 
 

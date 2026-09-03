@@ -66,55 +66,6 @@ void Yolov5::detect(const unsigned char* rgb_data, int w, int h, std::vector<Obj
     timer.restart();    
 
     
-/*
-    for(int i=0;i<10;i++)
-    {
-        const float* values = out.row(i);
-    
-        printf(
-        "%d: v4=%f v5=%f v6=%f v83=%f v84=%f\n",
-        i,
-        values[4],
-        values[5],
-        values[6],
-        values[83],
-        values[84]);
-    }
-
-    for(int i=0;i<5;i++)
-    {
-        const float* values=out.row(i);
-    
-        float max=0;
-        int index=-1;
-    
-        for(int j=4;j<85;j++)
-        {
-            if(values[j]>max)
-            {
-                max=values[j];
-                index=j;
-            }
-        }
-    
-        printf("row%d max_index=%d max=%f\n",
-               i,index,max);
-    }
-
-    for(int i=0;i<5;i++)
-    {
-        const float* values = out.row(i);
-    
-        printf("%d: ", i);
-    
-        for(int j=0;j<10;j++)
-        {
-            printf("%.4f ", values[j]);
-        }
-    
-        printf("\n");
-    }
-*/
 
     // 遍历 YOLO 输出的每一行（每一个候选框）
     // out.h = 候选框数量（例如 25200）out.w = 85  out.h = 25200

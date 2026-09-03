@@ -53,6 +53,13 @@ void Sprite::setOrbit(float radius, float speed)
 
 
 
+void Sprite::setSize(float width, float height)
+{
+    this->width = width;
+    this->height = height;
+}
+
+
 void Sprite::setPosition(float x,float y)
 {
     this->x = x;

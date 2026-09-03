@@ -42,7 +42,10 @@ public:
 
     void updateObjects(const std::vector<Object>& objects);     // 准备红框数据.
 
-    void drawBox(const Object& obj, int imageWidth, int imageHeight);
+//    void drawBox(const Object& obj, int imageWidth, int imageHeight);
+
+    // 根据当前显示窗口大小，改变画布大小
+    void resizeGL(int w, int h);
 
 
 protected:
@@ -72,9 +75,9 @@ private:
     Sprite* photo1;
     Sprite* circle1;
 
-    static const int MAX_BOXES = 20;
+    static const int MAX_BOXES = 10;
     Sprite* boxSprites[MAX_BOXES];
-    int boxCount;   // 识别的红框数量.
+    int boxCount = 0;   // 识别的红框数量.
     
     std::vector<Object> objects;    // 用于画ai识别的红框.
 
